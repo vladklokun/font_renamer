@@ -1,0 +1,5 @@
+[run]
+source =
+	./font_renamer
+[report]
+show_missing = true

@@ -1,0 +1,32 @@
+[tool.black]
+line-length = 80
+
+[tool.pylint.messages_control]
+disable = [
+	"bad-continuation",
+	"too-few-public-methods",
+]
+
+[tool.pylint.format]
+max-line-length = 80
+
+[tool.poetry]
+name = "font-renamer"
+version = "0.1.0"
+description = ""
+authors = ["Vlad Klokun <vklokun@protonmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fonttools = "^4.18.2"
+pytest = "^6.2.1"
+immutables = "^0.15"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.812"
+hypothesis = "^6.8.0"
+coverage = "^5.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
