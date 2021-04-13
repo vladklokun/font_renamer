@@ -113,6 +113,28 @@ class LanguageMappedPlatform(Platform):
         return platform_encoding_id
 
 
+@dc.dataclass(frozen=True)
+class LanguageInfo:
+    """A data structure describing the platform-specific language info.
+
+    Since language information is platform-specific, and the same language can
+    map to different `language_id`s and `language_encoding_id`s on different
+    platforms, we have to store a low-level platform-specific value for each
+    platform.
+    """
+
+    platform_id: fr_const.PlatformID
+    language_id: int
+    platform_encoding_id: int
+
+
+def get_language_info(platform, language_code: str) -> LanguageInfo:
+    """Return `LanguageInfo` for a given platform and language code."""
+    language_id = platform.get_language_id(language_code)
+    platform_encoding_id = platform.get_platform_encoding_id(language_code)
+    return LanguageInfo(platform.platform_id, language_id, platform_encoding_id)
+
+
 WINDOWS_PLATFORM: LanguageMappedPlatform = LanguageMappedPlatform(
     name="windows",
     platform_id=fr_const.PlatformID.WINDOWS,

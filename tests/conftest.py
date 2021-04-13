@@ -18,8 +18,6 @@ import fontTools.ttLib.tables._n_a_m_e as ft_table_name
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
 import pytest
 
-from font_renamer import name_record_mapper as ft_nrm
-
 from . import types as tt
 from . import hypothesis_strategies  # Ensure custom strategies are loaded
 
@@ -140,14 +138,3 @@ def raw_name_records(
 )
 def font_family_name(request) -> typ.Generator[str, None, None]:
     yield request.param
-
-
-# Session-scoped since `LangInfoMapper` is safe to share, and Hypothesis
-# requires fixtures that are used with it to be either session- or
-# module-scoped
-@pytest.fixture(scope="session")
-def default_language_info_mapper() -> typ.Generator[
-    ft_nrm.LanguageInfoMapper, None, None
-]:
-    """Yield the default language mapper."""
-    yield ft_nrm.LanguageInfoMapper()

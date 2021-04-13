@@ -1,5 +1,4 @@
-"""Custom Hypothesis strategies for generating test data.
-"""
+"""Custom Hypothesis strategies for generating test data."""
 import typing as typ
 
 import hypothesis.strategies as hyp_strats
@@ -49,7 +48,6 @@ supported_language_codes_all_platforms: hyp_strats.SearchStrategy[
     )
 )
 
-
 # Returns a supported language-mapped platform
 supported_language_mapped_platforms: hyp_strats.SearchStrategy[
     fr_platforms.LanguageMappedPlatform
@@ -60,16 +58,10 @@ hyp_strats.register_type_strategy(
     fr_platforms.LanguageMappedPlatform, supported_language_mapped_platforms
 )
 
-language_mapped_platforms_sets: hyp_strats.SearchStrategy[
-    typ.Set[fr_platforms.LanguageMappedPlatform]
-] = hyp_strats.sets(supported_language_mapped_platforms, min_size=1)
-
 
 @hyp_strats.composite
 def name_record_tuples_valid(draw) -> tt.NameRecordTupleValid:
-    """Return tuples that are valid arguments for instantiating
-    `NameRecord`s.
-    """
+    """Return tuples that are valid arguments for instantiating `NameRecord`s."""
     # Generate independent values
     string = draw(hyp_strats.text())
     name_id = draw(hyp_strats.sampled_from(ot_const.NameID))
