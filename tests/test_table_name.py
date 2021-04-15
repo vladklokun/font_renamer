@@ -3,10 +3,13 @@
 # Test classes do not use the self argument, but are required to accept it
 # pylint: disable=no-self-use
 
+import dataclasses as dc
+import itertools as it
 import typing as typ
 
 import fontTools.ttLib.tables._n_a_m_e as tt_table_name
 import hypothesis as h
+import hypothesis.strategies as h_strats
 import pytest
 
 import font_renamer.table_name as fr_name
@@ -114,6 +117,31 @@ class TestNameRecord:
         )
         with pytest.raises(ValueError):
             fr_name.NameRecord.from_ft_name_record(ft_name_record)
+
+    @h.given(name_record=h_strats.from_type(fr_name.NameRecord))
+    def test_as_dict_returns_matching_dict_copy(
+        self, name_record: fr_name.NameRecord
+    ) -> None:
+        """Test if `as_dict()` returns a valid matching dictionary.
+
+        A dictionary matching a `NameRecord` is considered valid if it is:
+            - Non-empty.
+            - Not the `__dict__` of the `NameRecord` instance.
+            - Its keys and values match the names and values of a
+              `NameRecord`'s fields.
+        """
+        nr_dict = name_record.as_dict()
+        assert nr_dict
+        assert nr_dict is not name_record.__dict__
+        assert set(nr_dict.keys()) == set(
+            f.name for f in dc.fields(fr_name.NameRecord)
+        )
+
+        for (nr_dict_key, nr_dict_val), (nr_key, nr_val) in it.zip_longest(
+            sorted(nr_dict.items()), sorted(name_record.__dict__.items())
+        ):
+            assert nr_dict_key == nr_key
+            assert nr_dict_val == nr_val
 
 
 class TestINameTableAdapter:

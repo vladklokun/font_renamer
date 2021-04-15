@@ -9,12 +9,13 @@ choices, we adapt some of the behavior:
   a value, or executes a command, but not both.
 """
 import abc
+import dataclasses as dc
 import typing as typ
+import font_renamer.opentype_name_constants as fr_const
 
 import fontTools.ttLib.tables._n_a_m_e as ft_name_table
-
-# alias OpenType `name` table class to conform to PEP8
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
+import pydantic as pyd
 
 
 class PNameRecord(typ.Protocol):
@@ -41,34 +42,18 @@ class PNameRecord(typ.Protocol):
         raise NotImplementedError
 
 
+@dc.dataclass(frozen=True)
 class NameRecord(PNameRecord):
     """A standard name record implementation."""
-
-    # pylint: disable=too-many-arguments,super-init-not-called
-    # Arguments correspond to OpenType spec, but in snake case.
-    # Inherits from `Protocol`, so superclasses' init should not be called.
-    def __init__(
-        self,
-        string: str,
-        name_id: int,
-        platform_id: int,
-        platform_encoding_id: int,
-        language_id: int,
-    ) -> None:
-        self.string = string
-        self.name_id = name_id
-        self.platform_id = platform_id
-        self.platform_encoding_id = platform_encoding_id
-        self.language_id = language_id
+    string: str
+    name_id: int
+    platform_id: int
+    platform_encoding_id: int
+    language_id: int
 
     def as_dict(self) -> typ.Dict[str, typ.Union[int, str]]:
-        return {
-            "string": self.string,
-            "name_id": self.name_id,
-            "platform_id": self.platform_id,
-            "platform_encoding_id": self.platform_encoding_id,
-            "language_id": self.language_id,
-        }
+        """Return the name record as a dictionary."""
+        return dict(self.__dict__)
 
     @classmethod
     def from_ft_name_record(
