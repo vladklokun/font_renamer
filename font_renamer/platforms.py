@@ -34,22 +34,22 @@ _WINDOWS_LANGUAGE_IDS: typ.Mapping[str, fr_const.LanguageID] = im.Map(
 
 # Maps language IDs to platform encoding IDs
 _MAC_PLATFORM_ENCODING_IDS: typ.Mapping[
-    fr_const.LanguageID, fr_const.MacEncodingID
+    fr_const.LanguageID, fr_const.MacPlatformEncodingID
 ] = im.Map(
     {
-        lang: fr_const.MacEncodingID(encoding)
+        lang: fr_const.MacPlatformEncodingID(encoding)
         for lang, encoding in ft_table_name._MAC_LANGUAGE_TO_SCRIPT.items()
     }
 )
 
 
 _WINDOWS_PLATFORM_ENCODING_IDS: typ.Mapping[
-    fr_const.LanguageID, fr_const.WindowsEncodingID
+    fr_const.LanguageID, fr_const.WindowsPlatformEncodingID
 ] = im.Map(
     {
         # Every language should be encoded as Unicode, since this is the most
         # widely supported option
-        lang: fr_const.WindowsEncodingID.UNICODE_BMP
+        lang: fr_const.WindowsPlatformEncodingID.UNICODE_BMP
         for lang in _WINDOWS_LANGUAGE_IDS.values()
     }
 )
@@ -61,7 +61,7 @@ class Platform:
 
     name: str
     platform_id: fr_const.PlatformID
-    valid_platform_encoding_ids: col_abc.Set[fr_const.PlatformEncodingID]
+    valid_platform_encoding_ids: col_abc.Set[fr_const.PlatformID]
     valid_language_ids: col_abc.Set[fr_const.LanguageID]
 
 
@@ -75,7 +75,7 @@ class LanguageMappedPlatform(Platform):
 
     language_ids: typ.Mapping[str, fr_const.LanguageID]
     platform_encoding_ids: typ.Mapping[
-        fr_const.LanguageID, fr_const.PlatformEncodingID
+        fr_const.LanguageID, fr_const.PlatformID
     ]
 
     def get_language_id(self, language_code: str) -> fr_const.LanguageID:
@@ -95,7 +95,7 @@ class LanguageMappedPlatform(Platform):
 
     def get_platform_encoding_id(
         self, language_code: str
-    ) -> fr_const.PlatformEncodingID:
+    ) -> fr_const.PlatformID:
         """Return OpenType `platform_encoding_id` for a given BCP-47 code.
 
         Raises an `UnsupportedLanguageCodeError` when a platform encoding ID
@@ -138,7 +138,7 @@ def get_language_info(platform, language_code: str) -> LanguageInfo:
 WINDOWS_PLATFORM: LanguageMappedPlatform = LanguageMappedPlatform(
     name="windows",
     platform_id=fr_const.PlatformID.WINDOWS,
-    valid_platform_encoding_ids=frozenset(fr_const.WindowsEncodingID),
+    valid_platform_encoding_ids=frozenset(fr_const.WindowsPlatformEncodingID),
     valid_language_ids=frozenset(_WINDOWS_LANGUAGE_IDS.values()),
     language_ids=_WINDOWS_LANGUAGE_IDS,
     platform_encoding_ids=_WINDOWS_PLATFORM_ENCODING_IDS,
@@ -146,7 +146,7 @@ WINDOWS_PLATFORM: LanguageMappedPlatform = LanguageMappedPlatform(
 MAC_PLATFORM: LanguageMappedPlatform = LanguageMappedPlatform(
     name="mac",
     platform_id=fr_const.PlatformID.MAC,
-    valid_platform_encoding_ids=frozenset(fr_const.MacEncodingID),
+    valid_platform_encoding_ids=frozenset(fr_const.MacPlatformEncodingID),
     valid_language_ids=frozenset(_MAC_LANGUAGE_IDS.values()),
     language_ids=_MAC_LANGUAGE_IDS,
     platform_encoding_ids=_MAC_PLATFORM_ENCODING_IDS,

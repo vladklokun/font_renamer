@@ -2,7 +2,9 @@
 
 https://docs.microsoft.com/en-us/typography/opentype/spec/name
 """
+import fontTools.ttLib.tables._n_a_m_e as ft_table_name
 import enum
+import typing as typ
 
 
 # We rely on fontTools to provide `languageID`s. It provides `languageID`s as
@@ -60,7 +62,7 @@ class PlatformID(int, enum.Enum):
     WINDOWS = 3
 
 
-class MacEncodingID(PlatformEncodingID, enum.Enum):
+class MacPlatformEncodingID(PlatformEncodingID, enum.Enum):
     """`encodingID` values defined for use with the Mac platform.
 
     https://docs.microsoft.com/en-us/typography/opentype/spec/name#macintosh-encoding-ids-script-manager-codes
@@ -101,7 +103,7 @@ class MacEncodingID(PlatformEncodingID, enum.Enum):
     UNINTERPRETED = 32
 
 
-class WindowsEncodingID(PlatformEncodingID, enum.Enum):
+class WindowsPlatformEncodingID(PlatformEncodingID, enum.Enum):
     """`encodingID` values defined for use with the Windows platform.
 
     https://docs.microsoft.com/en-us/typography/opentype/spec/name#windows-encoding-ids
@@ -115,3 +117,40 @@ class WindowsEncodingID(PlatformEncodingID, enum.Enum):
     WANSUNG = 5
     JOHAB = 6
     UNICODE_FULL_REPERTOIRE = 10
+
+
+__MAC_LANGUAGE_ID_DOC: str = (
+    """`languageID` values defined for use with the Mac platform.
+
+    https://docs.microsoft.com/en-us/typography/opentype/spec/name#macintosh-language-ids
+    """
+)
+MacLanguageID: typ.Final[type[enum.Enum]] = enum.Enum(
+    "MacLanguageID",
+    {
+        # Ignore Enum convention of naming member values in all caps in favor
+        # of BCP-47 codes, which are most commonly used in lowercase
+        lang_code.lower(): lang_id
+        for lang_code, lang_id in ft_table_name._MAC_LANGUAGE_CODES.items()
+    },
+    type=int,
+)
+MacLanguageID.__doc__ = __MAC_LANGUAGE_ID_DOC
+
+__WINDOWS_LANGUAGE_ID_DOC: str = (
+    """`languageID` values defined for use with the Windows platform.
+
+    https://docs.microsoft.com/en-us/typography/opentype/spec/name#windows-language-ids
+    """
+)
+WindowsLanguageID: typ.Final[type[enum.Enum]] = enum.Enum(
+    "WindowsLanguageID",
+    {
+        lang_code.lower(): lang_id
+        for lang_code, lang_id in ft_table_name._WINDOWS_LANGUAGE_CODES.items()
+    },
+    # fontTools expects language IDs to be `int`, so support them for possible
+    # interoperability in comparisons and serialization
+    type=int,
+)
+WindowsLanguageID.__doc__ = __WINDOWS_LANGUAGE_ID_DOC
